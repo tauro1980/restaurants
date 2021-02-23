@@ -10,3 +10,7 @@ export const isUserLogged = () => {
         user !== null && (isLogged = true)
     })
 }
+
+export const getCurrentUser = () => {
+    return firebase.auth().currentUser
+}

@@ -3,6 +3,8 @@ import { ScrollView,StyleSheet, Text, View, Image } from 'react-native'
 import { Divider } from 'react-native-elements'
 import {useNavigation } from '@react-navigation/native'
 
+import LoginForm from '../../components/account/LoginForm'
+
 export default function Login() {
     return (
         <ScrollView>
@@ -13,7 +15,7 @@ export default function Login() {
             />
             <View
                 style={styles.container}>
-                <Text>Login Form</Text>
+                <LoginForm/>
                 <CreateAccount/>
             </View>
             <Divider style={styles.divider}/>
@@ -23,7 +25,7 @@ export default function Login() {
 
 function CreateAccount(props) {
     const navigation = useNavigation()
-    
+
     return (
         <Text 
             style={styles.register}

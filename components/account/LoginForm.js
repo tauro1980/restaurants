@@ -2,8 +2,10 @@ import React,{ useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
+import { isEmpty } from 'lodash'
 
 import { validateEmail } from '../../utils/helpers'
+import { loginWhitEmailAndPassword } from '../../utils/action'
 import Loading from '../Loading'
 
 export default function LoginForm() {
@@ -19,11 +21,22 @@ export default function LoginForm() {
         setFormData({ ...formData, [type]: e.nativeEvent.text })
     }
 
-    const doLogin = () => {
+    const doLogin = async() => {
         if(!validateData()){
             return
         }
 
+        setLoading(true)
+        const result = await loginWhitEmailAndPassword(formData.email, formData.password)
+        setLoading(false)
+
+        if(!result.statusResponse){
+            setErrorEmail(result.error)
+            setErrorPassword(result.error)
+            return
+        }
+
+        navigation.navigate("account")
     }
 
     const validateData = () =>{
@@ -34,6 +47,11 @@ export default function LoginForm() {
 
         if(!validateEmail(formData.email)) {
             setErrorEmail("Debes de ingresar un Email válido.")
+            isValid = false
+        }
+
+        if(isEmpty(formData.password)) {
+            setErrorPassword("Debes de ingresar una contraseña.")
             isValid = false
         }
 

@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 
 import { validateEmail } from '../../utils/helpers'
 import { registerUser } from '../../utils/action'
+import Loading from '../Loading'
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false)
@@ -13,6 +14,7 @@ export default function RegisterForm() {
     const [errorEmail, setErrorEmail] = useState("")
     const [errorPassword, setErrorPassword] = useState("")
     const [errorConfirm, setErrorConfirm] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const navigation = useNavigation()
 
@@ -25,7 +27,9 @@ export default function RegisterForm() {
             return
         }
         
+        setLoading(true)
         const result = await registerUser(formData.email, formData.password)
+        setLoading(false)
 
         if(!result.statusResponse){
             setErrorEmail(result.error)
@@ -115,6 +119,10 @@ export default function RegisterForm() {
                 buttonStyle={styles.btn}
                 title="Registrar Nuevo Usuario"
                 onPress= {()=> doRegisterUser()}
+            />
+            <Loading
+                isVisible={loading}
+                text="Creando cuenta..."
             />
         </View>
     )

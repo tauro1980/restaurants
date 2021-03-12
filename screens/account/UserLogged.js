@@ -23,9 +23,17 @@ export default function UserLogged() {
     return (
         <View style={styles.container}>
             {
-               user && <InfoUser user={user}/>
+               user && (
+                   <View>
+                        <InfoUser 
+                            user={user} 
+                            setLoading={setLoading} 
+                            setLoadingText={setLoadingText}
+                        />
+                        <Text>Account Options...</Text>
+                    </View>
+                )
             }
-            <Text>Account Options...</Text>
             <Button
                 title="Cerrar Sesión"
                 buttonStyle={styles.btnCloseSession}

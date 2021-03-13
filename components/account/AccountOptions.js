@@ -6,7 +6,7 @@ import { Icon, ListItem } from 'react-native-elements'
 import Modal from '../Modal'
 import ChangeDisplayNameForm from './ChangeDisplayNameForm'
 
-export default function AccountOptions({ user, toastRef }) {
+export default function AccountOptions({ user, toastRef, setReloadUser }) {
 
     const [showModal, setShowModal] = useState(false)
     const [renderComponent, setRenderComponent] = useState(null)
@@ -45,9 +45,10 @@ export default function AccountOptions({ user, toastRef }) {
             case "displayName":
                 setRenderComponent(
                     <ChangeDisplayNameForm
-                        displaName={user.displaName}
+                        displayName={user.displayName}
                         setShowModal={setShowModal}
                         toastRef={toastRef}
+                        setReloadUser={setReloadUser}
                     />
                 )
             break;

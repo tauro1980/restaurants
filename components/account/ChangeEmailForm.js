@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import { Button,Icon,Input } from 'react-native-elements'
 import { isEmpty } from 'lodash'
 
-import { reauthenticate, updateEmail, updateProfile } from '../../utils/action'
+import { reauthenticate, updateEmail } from '../../utils/action'
 import { validateEmail } from '../../utils/helpers'
 
 export default function ChangeEmailForm({ email, setShowModal, toastRef, setReloadUser }) {

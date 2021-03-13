@@ -20,5 +20,4 @@ const styles = StyleSheet.create({
     overlay: {
         width:"90%"
     }
-
 })

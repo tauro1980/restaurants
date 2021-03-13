@@ -3,9 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import { Button,Icon,Input } from 'react-native-elements'
 import { isEmpty, size } from 'lodash'
 
-import { reauthenticate, updateEmail } from '../../utils/action'
-import { validateEmail } from '../../utils/helpers'
-
+import { reauthenticate, updatePassword } from '../../utils/action'
 
 export default function ChangePasswordForm({ setShowModal, toastRef }) {
     const [newPassword, setNewPassword] = useState(null)
@@ -22,25 +20,23 @@ export default function ChangePasswordForm({ setShowModal, toastRef }) {
             return
         }
 
-        // setLoading(true)
-        // const resultReauthenticate = await reauthenticate(password)
-        // if(!resultReauthenticate.statusResponse){
-        //     setErrorPassword("Credenciales incorrectas.")
-        //     setLoading(false)
-        //     return
-        // }
+        setLoading(true)
+        const resultReauthenticate = await reauthenticate(currentPassword)
+        if(!resultReauthenticate.statusResponse){
+            setErrorCurrentPassword("Credenciales incorrectas.")
+            setLoading(false)
+            return
+        }
 
-        // const resultUpdateEmail = await updateEmail(newEmail)
-        // setLoading(false)
-        // if(!resultUpdateEmail.statusResponse){
-        //     setErrorPassword("No se puede cambiar por este correo ya está en uso por otro usuario.")
-        //     return
-        // }
+        const resultUpdatePassword = await updatePassword(newPassword)
+        setLoading(false)
+        if(!resultUpdatePassword.statusResponse){
+            setErrorNewPassword("Hubo un problema cambiando la contraseña, por favor intente mós tarde.")
+            return
+        }
 
-        
-        // setReloadUser(true)
-        // toastRef.current.show("Se ha actualizado el correo electrónico.",3000)
-        // setShowModal(false)
+        toastRef.current.show("Se ha actualizado la contraseña.",3000)
+        setShowModal(false)
     }
 
     const ValidateForm = () =>{

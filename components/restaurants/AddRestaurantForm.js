@@ -39,6 +39,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
                 errorAddress={errorAddress}
                 errorPhone={errorPhone}
                 setIsVisibleMap={setIsVisibleMap}
+                locationRestaurant={locationRestaurant}
             />
             <UploadImage
                 toastRef={toastRef}
@@ -62,28 +63,37 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
 }
 
 function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant, setLocationRestaurant, toastRef }) {
+    const [newRegion, setNewRegion] = useState(null)
+
     useEffect(() => {
         (async()=>{
             const response = await getCurrentLocation()
             if(response.status){
-                setLocationRestaurant(response.location)
+                setNewRegion(response.location)
             }
         })()
     }, [])
+
+    const confirmLocation=()=>{
+        setLocationRestaurant(newRegion)
+        toastRef.current.show("Localización guardada correctamente.", 3000)
+        setIsVisibleMap(false)
+    }
     return (
         <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
             <View>
                 {
-                    locationRestaurant && (
+                    newRegion && (
                         <MapView
                             style={styles.mapStyle}
-                            initialRegion={locationRestaurant}
-                            showsUserLocation
+                            initialRegion={newRegion}
+                            showsUserLocation={true}
+                            onRegionChange={(region)=>setNewRegion(region)}
                         >
                             <MapView.Marker
                                 coordinate={{
-                                    latitude : locationRestaurant.latitude,
-                                    longitude : locationRestaurant.longitude
+                                    latitude : newRegion.latitude,
+                                    longitude : newRegion.longitude
                                 }}
                                 draggable
                             />
@@ -95,11 +105,13 @@ function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant, setL
                         title="Guardar Ubicación"
                         containerStyle={styles.viewMapBtnContainerSave}
                         buttonStyle={styles.viewMapBtnSave}
+                        onPress={confirmLocation}
                     />
                     <Button
                         title="Cancelar Ubicación"
                         containerStyle={styles.viewMapBtnContainerCancel}
                         buttonStyle={styles.viewMapBtnCancel}
+                        onPress={()=>setIsVisibleMap(false)}
                     />
                 </View>
             </View>
@@ -185,7 +197,17 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
     )
 }
 
-function FormAdd({formData, setFormData, errorName, errorDescription, errorEmail, errorAddress, errorPhone, setIsVisibleMap}) {
+function FormAdd({
+    formData, 
+    setFormData, 
+    errorName, 
+    errorDescription, 
+    errorEmail, 
+    errorAddress, 
+    errorPhone, 
+    setIsVisibleMap, 
+    locationRestaurant
+}) {
     const [country, setCountry] = useState("EC")
     const [callingCode, setCallingCode] = useState("593")
     const [phone, setPhone] = useState("")
@@ -209,8 +231,8 @@ function FormAdd({formData, setFormData, errorName, errorDescription, errorEmail
                 errorMessage={errorAddress}
                 rightIcon={{
                     type: "material-community",
-                    name: "google-map",
-                    color: "#c2c2c2",
+                    name: "google-maps",
+                    color: locationRestaurant ? "#442484" : "#c2c2c2",
                     onPress: ()=>setIsVisibleMap(true)
                 }}
             />
@@ -328,12 +350,12 @@ const styles = StyleSheet.create({
         paddingLeft: 5
     },
     viewMapBtnContainerSave: {
-        paddingLeft: 5
+        paddingRight: 5
     },
     viewMapBtnCancel: {
-        backgroundColor:"#a65273"
+        backgroundColor: "#a65273"
     },
     viewMapBtnSave: {
-        backgroundColor:"#442484"
+        backgroundColor: "#442484"
     }
 })

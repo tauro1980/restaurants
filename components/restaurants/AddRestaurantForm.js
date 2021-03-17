@@ -6,9 +6,9 @@ import CountryPicker from 'react-native-country-picker-modal'
 import MapView from 'react-native-maps'
 import uuid from 'random-uuid-v4'
 
-import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
 import Modal from '../../components/Modal'
-import { uploadImage } from '../../utils/action'
+import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
+import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../utils/action'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -29,8 +29,31 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
         }
 
         setLoading(true)
-        const response = await uploadImages()
+        const responseUploadImages = await uploadImages()
+        const restaurant = {
+            name: formData.name,
+            address: formData.address,
+            email: formData.email,
+            callingCode: formData.callingCode,
+            phone: formData.phone,
+            description: formData.description,
+            location: locationRestaurant,
+            images: responseUploadImages,
+            rating: 0,
+            ratingTotal: 0,
+            cuantityVoting: 0,
+            createAdd: new Date(),
+            createBy: getCurrentUser().uid
+        }
+        const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)
         setLoading(false)
+
+        if(!responseAddDocument.statusResponse){
+            toastRef.current.show("Error al grabar el restaurante por favor intenta más tarde.", 3000)
+            return
+        }
+
+        navigation.navigate("restaurants")
     }
 
     const uploadImages = async()=>{

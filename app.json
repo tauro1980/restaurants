@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.santoscorp.restaurants",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.santoscorp.restaurants",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBIRjJz-7nl71E9kIVA0oxmNqJs5Gvrac8"
+        }
       },
       "permissions":[
         "CAMERA_ROLL",

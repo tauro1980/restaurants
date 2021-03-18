@@ -7,7 +7,7 @@ import firebase from 'firebase/app'
 
 import Loading from '../../components/Loading'
 import ListRestaurants from '../../components/restaurants/ListRestaurants'
-import { getRestaurants } from '../../utils/action'
+import { getMoreRestaurants, getRestaurants } from '../../utils/action'
 
 export default function Restaurants({ navigation }) {
     const [user, setUser] = useState(null)
@@ -35,6 +35,20 @@ export default function Restaurants({ navigation }) {
             },[])
     )
 
+    const handleLoadMore = async()=>{
+        if(!startRestaurant){
+            return
+        }
+
+        setLoading(true)
+        const response = await getMoreRestaurants(limitRestaurants, startRestaurant)
+        if (response.statusResponse) {
+            setStartRestaurant(response.startRestaurant)
+            setRestaurants([...restaurants, ...response.restaurants])
+        }
+        setLoading(false)
+    }
+
     if(user===null){
         return <Loading isVisible={true} text="Cargando..."/>
     }
@@ -46,6 +60,7 @@ export default function Restaurants({ navigation }) {
                     <ListRestaurants
                         restaurants={restaurants}
                         navigation={navigation}
+                        handleLoadMore={handleLoadMore}
                     />
                 ) : (
                     <View style={styles.notFoundView}>

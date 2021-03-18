@@ -2,13 +2,16 @@ import { size } from 'lodash'
 import React from 'react'
 import { FlatList, Text, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native'
 import { Image } from 'react-native-elements'
+import { formatPhone } from '../../utils/helpers'
 
-export default function ListRestaurants({ restaurants, navigation }) {
+export default function ListRestaurants({ restaurants, navigation, handleLoadMore }) {
     return (
         <View>
             <FlatList
                 data={restaurants}
                 keyExtractor={(item, index) => index.toString() }
+                onEndReachedThreshold={0.5}
+                onEndReached={handleLoadMore}
                 renderItem={(restaurant) => (
                     <Restaurant restaurant={restaurant} navigation={navigation}/>
                 )}
@@ -17,7 +20,7 @@ export default function ListRestaurants({ restaurants, navigation }) {
     )
 }
 
-function Restaurant({ restaurant, navigation }) {
+function Restaurant({ restaurant, navigation, handleLoadMore }) {
     const { item, images, name, address, description, phone, callingCode} = restaurant.item
     const imageRestaurant = images[0]
 
@@ -35,7 +38,7 @@ function Restaurant({ restaurant, navigation }) {
                 <View>
                     <Text style={styles.restaurantTitle}>{name}</Text>
                     <Text style={styles.restaurantInformation}>{address}</Text>
-                    <Text style={styles.restaurantInformation}>{callingCode}-{phone}</Text>
+                    <Text style={styles.restaurantInformation}>{formatPhone(callingCode, phone)}</Text>
                     <Text style={styles.restaurantDescription}>
                         {
                         size(description) > 60 
@@ -51,26 +54,26 @@ function Restaurant({ restaurant, navigation }) {
 
 const styles = StyleSheet.create({
     viewRestaurant: {
-        flexDirection:"row",
-        margin:10
+        flexDirection: "row",
+        margin: 10
     },
     viewRestaurantImage: {
-        marginLeft:15
+        marginRight: 15
     },
     imageRestaurant: {
-        width:90,
-        height:90
+        width: 90,
+        height: 90
     },
     restaurantTitle: {
-        fontWeight:"bold"
+        fontWeight: "bold"
     },
     restaurantInformation: {
-        paddingTop:2,
-        color: "gray"
+        paddingTop: 2,
+        color: "grey"
     },
     restaurantDescription: {
-        paddingTop:2,
-        color: "gray",
-        width:"75%"
+        paddingTop: 2,
+        color: "grey",
+        width: "75%"
     }
 })

@@ -51,3 +51,7 @@ export const getCurrentLocation = async() => {
     response.location = location
     return response
 }
+
+export const formatPhone = (callingCode, phone) => {
+    return `+(${callingCode}) ${phone.substr(0,2)} ${phone.substr(2,3)} ${phone.substr(5,4)}`
+}

@@ -42,7 +42,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
             rating: 0,
             ratingTotal: 0,
             cuantityVoting: 0,
-            createAdd: new Date(),
+            createAt: new Date(),
             createBy: getCurrentUser().uid
         }
         const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)

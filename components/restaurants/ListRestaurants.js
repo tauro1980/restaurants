@@ -21,11 +21,15 @@ export default function ListRestaurants({ restaurants, navigation, handleLoadMor
 }
 
 function Restaurant({ restaurant, navigation, handleLoadMore }) {
-    const { item, images, name, address, description, phone, callingCode} = restaurant.item
+    const { id, images, name, address, description, phone, callingCode} = restaurant.item
     const imageRestaurant = images[0]
 
+    const goRestaurant = () => {
+        navigation.navigate("restaurant", { id, name})
+    }
+
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={goRestaurant}>
             <View style={styles.viewRestaurant}>
                 <View style={styles.viewRestaurantImage}>
                     <Image

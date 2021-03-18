@@ -22,7 +22,7 @@ export default function Navigation() {
                 iconName = "heart-outline"
                 break;
             case "top-restaurants":
-                iconName = "start-outline"
+                iconName = "star-outline"
                 break;
             case "search":
                 iconName = "magnify"

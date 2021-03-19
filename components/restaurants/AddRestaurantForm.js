@@ -300,6 +300,8 @@ function FormAdd({
     locationRestaurant
 }) {
     const [country, setCountry] = useState("EC")
+    const [callingCode, setCallingCode] = useState("593")
+    const [phone, setPhone] = useState("")
 
     const onChange = (e, type)=>{
         setFormData({ ...formData, [type] : e.nativeEvent.text })
@@ -341,12 +343,13 @@ function FormAdd({
                     containerStyle={styles.countryPicker}
                     countryCode={country}
                     onSelect={(country) => {
+                        setCountry([country.cca2])
+                        setCallingCode(country.callingCode[0])
                         setFormData({ 
                             ...formData, 
                             "country": country.cca2, 
                             "callingCode": country.callingCode[0]
                         })
-                        console.log(formData)
                     }}
                 />
                 <Input

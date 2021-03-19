@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { map } from 'lodash'
 import { Alert, Dimensions, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { Icon, ListItem, Rating } from 'react-native-elements'
@@ -10,7 +10,7 @@ import Loading from '../../components/Loading'
 import CarouselImages from '../../components/CarouselImages'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import ListReviews from '../../components/restaurants/ListReviews'
-import { getDocumentById } from '../../utils/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite } from '../../utils/action'
 import { formatPhone } from '../../utils/helpers'
 
 const widthScreen = Dimensions.get("window").width
@@ -23,13 +23,14 @@ export default function Restaurant({ navigation, route }) {
     const [activeSlide, setActiveSlide] = useState(0)
     const [isFavorite, setIsFavorite] = useState(false)
     const [userLogged, setUserLogged] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     firebase.auth().onAuthStateChanged(user =>{
         user ? setUserLogged(true) : setUserLogged(false)
     })
 
     navigation.setOptions({ title: name })
-    
+
     useFocusEffect(
         useCallback(() => {
             (async() => {
@@ -43,14 +44,37 @@ export default function Restaurant({ navigation, route }) {
             })()
         }, [])  
     )
+    
+    useEffect(() => {
+        (async() => {
+            if(userLogged && restaurant) {
+                const response = await getIsFavorite(restaurant.id)
+                if(response.statusResponse){
+                    setIsFavorite(response.isFavorite)
+                }
+            }
+        })()
+    }, [userLogged, restaurant])
 
-    const addFavorite = () => {
+    const addFavorite = async() => {
         if(!userLogged){
             toastRef.current.show("Para agregar el restaurante a favoritos debes de estar logeado.",3000)
             return
         }
 
-        console.log("adicionar favorito")
+        setLoading(true)
+        const response =await addDocumentWithoutId("favorites",{
+            idUser: getCurrentUser().uid,
+            idRestaurant: restaurant.id
+        })
+        setLoading(false)
+
+        if(response.statusResponse){
+            setIsFavorite(true)
+            toastRef.current.show("Restaurante añadido a favoritos.",3000)
+        } else {
+            toastRef.current.show("No se pudo adicionar el restaurante a favoritos, por favor intenta más tarde.",3000)
+        }
     }
 
     const removeFavorite = () => {
@@ -76,7 +100,7 @@ export default function Restaurant({ navigation, route }) {
                     type="material-community"
                     name={ isFavorite ? "heart" : "heart-outline" }
                     onPress={ isFavorite ? removeFavorite : addFavorite }
-                    color={ isFavorite ? "#ffffff" : "#442484" }
+                    color="#442484"
                     size={45}
                     underlayColor="transparent"
                 />
@@ -98,6 +122,7 @@ export default function Restaurant({ navigation, route }) {
                 idRestaurant={restaurant.id}
             />
             <Toast ref={toastRef} position="center" opacity={0.9} />
+            <Loading isVisible={loading} text="Por favor espere..."/>
         </ScrollView>
     )
 }

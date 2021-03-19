@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { AirbnbRating, Button, Input } from 'react-native-elements'
-import Toast from 'react-native-easy-toast'
 import { isEmpty } from 'lodash'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Toast from 'react-native-easy-toast'
 
 import Loading from '../../components/Loading'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, updateDocument } from '../../utils/action'
 
 export default function AddReviewRestaurant({ navigation, route }) {
     const { idRestaurant } = route.params
@@ -17,11 +19,50 @@ export default function AddReviewRestaurant({ navigation, route }) {
     const [errorReview, setErrorReview] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    const addReview = () =>{
+    const addReview = async() =>{
         if(!validForm()){
             return
         }
-        console.log("Fuck yeahh!!")
+        
+        setLoading(true)
+        const user = getCurrentUser()
+        const data = {
+            idUser: user.uid,
+            avatarUser: user.photoURL,
+            idRestaurant,
+            title,
+            rating,
+            createAt: new Date()
+        }
+        const responseAddReview = await addDocumentWithoutId("reviews", data)
+        if(!responseAddReview.statusResponse){
+            setLoading(false)
+            toastRef.current.show("Error al enviar el comentario, por favor intenta más tarde", 3000)
+            return
+        }
+        const responseGetRestaurant = await getDocumentById("restaurants", idRestaurant)
+        if(!responseGetRestaurant.statusResponse){
+            setLoading(false)
+            toastRef.current.show("Error al obtener el restaurante, por favor intenta más tarde", 3000)
+            return
+        }
+
+        const restaurant = responseGetRestaurant.document
+        const ratingTotal = restaurant.ratingTotal + rating
+        const quantityVoting = restaurant.quantityVoting + 1
+        const ratingResult = ratingTotal/quantityVoting
+        const responseUpdateRestaurant = await updateDocument("restaurants", idRestaurant, {
+            ratingTotal,
+            quantityVoting,
+            rating: ratingResult
+        })
+        setLoading(false)
+        if(!responseUpdateRestaurant.statusResponse){
+            toastRef.current.show("Error al actualizar el restaurante, por favor intenta más tarde", 3000)
+            return
+        }
+
+        navigation.goBack()
     }
 
     const validForm = () => {
@@ -48,7 +89,7 @@ export default function AddReviewRestaurant({ navigation, route }) {
     }
 
     return (
-        <View style={styles.viewBody}>
+        <KeyboardAwareScrollView style={styles.viewBody}>
             <View style={styles.viewRating}>
                 <AirbnbRating
                     count={5}
@@ -82,7 +123,7 @@ export default function AddReviewRestaurant({ navigation, route }) {
             </View>
             <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text="Enviando comentario..."/>
-        </View>
+        </KeyboardAwareScrollView>
     )
 }
 

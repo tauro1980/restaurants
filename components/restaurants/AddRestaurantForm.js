@@ -41,7 +41,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
             images: responseUploadImages,
             rating: 0,
             ratingTotal: 0,
-            cuantityVoting: 0,
+            quantityVoting: 0,
             createAt: new Date(),
             createBy: getCurrentUser().uid
         }

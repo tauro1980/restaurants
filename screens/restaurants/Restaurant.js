@@ -10,7 +10,7 @@ import Loading from '../../components/Loading'
 import CarouselImages from '../../components/CarouselImages'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import ListReviews from '../../components/restaurants/ListReviews'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite } from '../../utils/action'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite } from '../../utils/action'
 import { formatPhone } from '../../utils/helpers'
 
 const widthScreen = Dimensions.get("window").width
@@ -63,7 +63,7 @@ export default function Restaurant({ navigation, route }) {
         }
 
         setLoading(true)
-        const response =await addDocumentWithoutId("favorites",{
+        const response = await addDocumentWithoutId("favorites",{
             idUser: getCurrentUser().uid,
             idRestaurant: restaurant.id
         })
@@ -77,9 +77,17 @@ export default function Restaurant({ navigation, route }) {
         }
     }
 
-    const removeFavorite = () => {
+    const removeFavorite = async() => {
+        setLoading(true)
+        const response = await deleteFavorite(restaurant.id)
+        setLoading(false)
 
-        console.log("remover favorito")
+        if(response.statusResponse){
+            setIsFavorite(false)
+            toastRef.current.show("Restaurante eliminado de favoritos.",3000)
+        } else {
+            toastRef.current.show("No se pudo eliminar el restaurante de favoritos, por favor intenta más tarde.",3000)
+        }
     }
 
     if(!restaurant){
